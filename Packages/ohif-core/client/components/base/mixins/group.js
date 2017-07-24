@@ -1,5 +1,6 @@
 import { OHIF } from 'meteor/ohif:core';
 import { Template } from 'meteor/templating';
+import { ReactiveVar } from 'meteor/reactive-var';
 import { _ } from 'meteor/underscore';
 
 /*
@@ -111,6 +112,10 @@ OHIF.mixins.group = new OHIF.Mixin({
                     return result;
                 }
 
+                // Reset the validation
+                const schema = component.isForm ? component.schema : component.getForm().schema;
+                schema.resetValidation();
+
                 // Validate the component itself if it has a key
                 if (instance.data.pathKey && !validateSelf()) {
                     result = false;
@@ -147,7 +152,7 @@ OHIF.mixins.group = new OHIF.Mixin({
             const component = instance.component;
 
             // Set the element to be controlled
-            component.$element = instance.$('.component-group:first');
+            component.$element = instance.$('.component-group').first();
         }
     }
 });

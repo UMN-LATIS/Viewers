@@ -1,3 +1,4 @@
+
 // stripped down router - for any inbound url, just try to load a global ivar named globalData.
 
 
@@ -16,6 +17,7 @@ if (Meteor.isClient) {
     this.render('standaloneViewer', {
         data: function() {
             return data;
+
         }
     });
     }});

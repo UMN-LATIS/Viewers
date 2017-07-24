@@ -1,3 +1,4 @@
+import { Template } from 'meteor/templating';
 import { OHIF } from 'meteor/ohif:core';
 
 OHIF.blaze = {};
@@ -39,4 +40,27 @@ OHIF.blaze.getParentComponent = (view, property='_component') => {
             return currentView[property];
         }
     }
+};
+
+// Search for the parent template of the given view
+OHIF.blaze.getParentTemplateView = view => {
+    let currentView = view;
+    while (currentView) {
+        currentView = currentView.originalParentView || currentView.parentView;
+        if (!currentView || !currentView.name) return;
+        if (currentView.name.indexOf('Template.') > -1 && currentView.name.indexOf('Template.__dynamic') === -1) {
+            return currentView;
+        }
+    }
+};
+
+// Get the view that contains the desired section's content and return it
+OHIF.blaze.getSectionContent = (view, sectionName) => {
+    let currentView = view;
+    while (!currentView._sectionMap || !currentView._sectionMap.get(sectionName)) {
+        currentView = OHIF.blaze.getParentTemplateView(currentView);
+        if (!currentView) return;
+    }
+
+    return currentView._sectionMap.get(sectionName);
 };

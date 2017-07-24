@@ -35,7 +35,13 @@ OHIF.mixins.formItem = new OHIF.Mixin({
                     return component.parseData(component.$element.val());
                 }
 
-                component.$element.val(value).trigger('change');
+                // Deferring the `change` event because it was being triggered before
+                // formItem.onMixins execution when a defaultValue was specified. In
+                // this case $elem.data('component') code from the event handler was
+                // returning `undefined` and breaking the app
+                Meteor.defer(() => {
+                    component.$element.val(value).trigger('change');
+                });
             };
 
             // Disable or enable the component
@@ -75,7 +81,7 @@ OHIF.mixins.formItem = new OHIF.Mixin({
             // Set the component in error state and display the error message
             component.error = errorMessage => {
                 // Set the component error state
-                component.state('error', errorMessage);
+                component.state('error', !!errorMessage);
 
                 // Set or remove the error message
                 if (errorMessage) {
@@ -88,16 +94,18 @@ OHIF.mixins.formItem = new OHIF.Mixin({
             // Toggle the tooltip over the component
             component.toggleTooltip = (isShow, message) => {
                 if (isShow && message) {
-                    // Stop here if the tooltip is already created
-                    if (component.$wrapper.next('.tooltip').length) {
-                        return;
+                    const tooltipId = component.$wrapper.attr('aria-describedby');
+                    const $tooltip = $(document.getElementById(tooltipId));
+                    if ($tooltip.length) {
+                        // Change the message if the tooltip is already created
+                        $tooltip.find('.tooltip-inner').text(message);
+                    } else {
+                        // Destroy the tooltip if already created, creating it again
+                        component.$wrapper.tooltip('destroy').tooltip({
+                            trigger: 'manual',
+                            title: message
+                        }).tooltip('show');
                     }
-
-                    // Create the tooltip
-                    component.$wrapper.tooltip({
-                        trigger: 'manual',
-                        title: message
-                    }).tooltip('show');
                 } else {
                     // Destroy the tooltip
                     component.$wrapper.tooltip('destroy');
@@ -127,7 +135,7 @@ OHIF.mixins.formItem = new OHIF.Mixin({
                     // Show the tooltip with the error message
                     component.toggleTooltip(true, errorMessage);
                 }
-            },
+            };
 
             // Search for the parent form component
             component.getForm = () => {
@@ -183,7 +191,7 @@ OHIF.mixins.formItem = new OHIF.Mixin({
                 }
 
                 // Create the data document for validation
-                const document = OHIF.blaze.getNestedObject({
+                const document = OHIF.object.getNestedObject({
                     [key]: component.value()
                 });
 
@@ -213,6 +221,17 @@ OHIF.mixins.formItem = new OHIF.Mixin({
                 return component.changeObserver.depend();
             };
 
+            // Click the first submit (or first button if submit not found) button on closest form
+            component.triggerFormMainButton = () => {
+                const $form = component.$element.closest('form');
+                let $formButton = $form.find('button[type=submit]:first');
+                if (!$formButton.length) {
+                    $formButton = $form.find('button:first');
+                }
+
+                $formButton.click();
+            };
+
         },
 
         onRendered() {
@@ -227,13 +246,42 @@ OHIF.mixins.formItem = new OHIF.Mixin({
 
             // Add the pathKey to the wrapper element
             component.$wrapper.attr('data-key', instance.data.pathKey);
+
+            // Get the component's form
+            const form = component.getForm();
+
+            // Observer for changes and revalidate the component
+            instance.autorun(computation => {
+                component.changeObserver.depend();
+
+                // Stop here if it is the first run
+                if (computation.firstRun) return;
+
+                // Revalidate the component if form is already validated
+                if (form && form.isValidatedAlready) {
+                    component.validate();
+                }
+            });
         },
 
         onDestroyed() {
             const instance = Template.instance();
+            const component = instance.component;
 
-            // Register the component in the parent component
-            instance.component.unregisterSelf();
+            // Get the component's form for further use
+            const form = component.getForm();
+
+            // Unregister the component in the parent component
+            component.unregisterSelf();
+
+            // Remove the component tooltip, error state and message
+            component.error(false);
+            component.toggleTooltip(false);
+
+            // Revalidate the form to remove this component from validation results
+            if (form && form.isValidatedAlready) {
+                form.validate();
+            }
         },
 
         onMixins() {
@@ -260,43 +308,27 @@ OHIF.mixins.formItem = new OHIF.Mixin({
                 if (event.currentTarget === component.$element[0]) {
                     // Enable reactivity by changing a Tracker.Dependency observer
                     component.changeObserver.changed();
-
-                    const form = component.getForm();
-                    if (form && form.isValidatedAlready) {
-                        // Revalidate the component if form is already validated
-                        component.validate();
-                    }
                 }
             },
 
             focus(event, instance) {
                 const component = instance.component;
-
-                // Stop here if it is an group
-                if (component.isGroup || component.isCustomFocus) {
-                    return;
+                const isGroupOrCustomFocus = component.isGroup || component.isCustomFocus;
+                const isSameTarget = event.target === event.currentTarget;
+                if (!isGroupOrCustomFocus && isSameTarget) {
+                    // Check for state messages and show it
+                    component.toggleMessage(true);
                 }
-
-                // Prevent event bubbling
-                event.stopPropagation();
-
-                // Check for state messages and show it
-                component.toggleMessage(true);
             },
 
             blur(event, instance) {
                 const component = instance.component;
-
-                // Stop here if it is an group
-                if (component.isGroup || component.isCustomFocus) {
-                    return;
+                const isGroupOrCustomFocus = component.isGroup || component.isCustomFocus;
+                const isSameTarget = event.target === event.currentTarget;
+                if (!isGroupOrCustomFocus && isSameTarget) {
+                    // Check for state messages and show it
+                    component.toggleMessage(false);
                 }
-
-                // Prevent event bubbling
-                event.stopPropagation();
-
-                // Hide state messages
-                component.toggleMessage(false);
             }
 
         }
