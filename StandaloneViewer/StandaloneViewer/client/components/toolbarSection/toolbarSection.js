@@ -69,38 +69,12 @@ Template.toolbarSection.helpers({
         });
 
         buttonData.push({
-            id: 'toggleCinePlay',
-            title: 'Toggle CINE Play',
-            classes: 'imageViewerCommand',
-            buttonTemplateName: 'playClipButton'
-        });
-
-        buttonData.push({
-            id: 'toggleCineDialog',
-            title: 'CINE',
-            classes: 'imageViewerCommand',
-            iconClasses: 'fa fa-youtube-play'
-        });
-
-        buttonData.push({
-            id: 'layout',
-            title: 'Layout',
-            iconClasses: 'fa fa-th-large',
-            buttonTemplateName: 'layoutButton'
-        });
-
-        return buttonData;
-    },
-
-    extraToolbarButtons() {
-        let buttonData = [];
-
-        buttonData.push({
             id: 'stackScroll',
             title: 'Stack Scroll',
             classes: 'imageViewerTool',
             iconClasses: 'fa fa-bars'
         });
+
 
         buttonData.push({
             id: 'magnify',
@@ -109,6 +83,40 @@ Template.toolbarSection.helpers({
             iconClasses: 'fa fa-circle'
         });
         
+
+        buttonData.push({
+            id: 'toggleCinePlay',
+            title: 'Toggle CINE Play',
+            classes: 'imageViewerCommand',
+            buttonTemplateName: 'playClipButton'
+        });
+        
+
+
+
+        return buttonData;
+    },
+
+    extraToolbarButtons() {
+        let buttonData = [];
+
+
+        buttonData.push({
+            id: 'toggleCineDialog',
+            title: 'CINE',
+            classes: 'imageViewerCommand',
+            iconClasses: 'fa fa-youtube-play'
+        });
+
+
+        buttonData.push({
+            id: 'layout',
+            title: 'Layout',
+            iconClasses: 'fa fa-th-large',
+            buttonTemplateName: 'layoutButton'
+        });
+
+
         buttonData.push({
             id: 'wwwcRegion',
             title: 'ROI Window',
