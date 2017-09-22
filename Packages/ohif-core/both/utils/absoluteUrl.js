@@ -7,5 +7,5 @@ OHIF.utils.absoluteUrl = function(path) {
         path = path.replace(/^\//, '');
     }
 
-    return Meteor.absoluteUrl(path);
+    return "/assets/dicom/" + path;
 };
