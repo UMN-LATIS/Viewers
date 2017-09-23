@@ -84,7 +84,7 @@ updateMetaData = function(image) {
     imageMetaData.instance.sopClassUid = imageMetaData.instance.sopClassUid || image.data.string('x00080016');
     imageMetaData.instance.sopInstanceUid = imageMetaData.instance.sopInstanceUid || image.data.string('x00080018');
 
-    imageMetaData.instance.rows = imageMetaData.instance.rows || image.rows;
+    imageMetaData.instance.rows = image.rows || imageMetaData.instance.rows;
     imageMetaData.instance.columns = imageMetaData.instance.columns || image.columns;
     imageMetaData.instance.pixelSpacing = imageMetaData.instance.pixelSpacing || image.data.string('x00280030');
     imageMetaData.instance.frameOfReferenceUID = imageMetaData.instance.frameOfReferenceUID || image.data.string('x00200052');
