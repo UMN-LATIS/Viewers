@@ -19,11 +19,12 @@ Template.toolbarSection.helpers({
 
     toolbarButtons() {
         var buttonData = [];
+
         buttonData.push({
-            id: 'zoom',
-            title: 'Zoom',
+            id: 'fullscreen',
+            title: 'Fullscreen',
             classes: 'imageViewerTool',
-            svgLink: '/assets/dicom/packages/viewerbase/assets/icons.svg#icon-tools-zoom'
+            iconClasses: 'fa fa-external-link'
         });
 
         buttonData.push({
@@ -31,6 +32,20 @@ Template.toolbarSection.helpers({
             title: 'Levels',
             classes: 'imageViewerTool',
             svgLink: '/assets/dicom/packages/viewerbase/assets/icons.svg#icon-tools-levels'
+        });
+
+        buttonData.push({
+            id: 'stackScroll',
+            title: 'Stack Scroll',
+            classes: 'imageViewerTool',
+            iconClasses: 'fa fa-bars'
+        });
+
+        buttonData.push({
+            id: 'zoom',
+            title: 'Zoom',
+            classes: 'imageViewerTool',
+            svgLink: '/assets/dicom/packages/viewerbase/assets/icons.svg#icon-tools-zoom'
         });
 
         buttonData.push({
@@ -48,17 +63,10 @@ Template.toolbarSection.helpers({
         });
 
         buttonData.push({
-            id: 'annotate',
-            title: 'Annotate',
+            id: 'ellipticalRoi',
+            title: 'ROI',
             classes: 'imageViewerTool',
-            svgLink: '/assets/dicom/packages/viewerbase/assets/icons.svg#icon-tools-measure-non-target'
-        });
-
-        buttonData.push({
-            id: 'angle',
-            title: 'Angle',
-            classes: 'imageViewerTool',
-            iconClasses: 'fa fa-angle-left'
+            iconClasses: 'fa fa-circle-o'
         });
 
         buttonData.push({
@@ -76,13 +84,6 @@ Template.toolbarSection.helpers({
         });
 
         buttonData.push({
-            id: 'toggleCineDialog',
-            title: 'CINE',
-            classes: 'imageViewerCommand',
-            iconClasses: 'fa fa-youtube-play'
-        });
-
-        buttonData.push({
             id: 'layout',
             title: 'Layout',
             iconClasses: 'fa fa-th-large',
@@ -96,10 +97,24 @@ Template.toolbarSection.helpers({
         let buttonData = [];
 
         buttonData.push({
-            id: 'stackScroll',
-            title: 'Stack Scroll',
+            id: 'angle',
+            title: 'Angle',
             classes: 'imageViewerTool',
-            iconClasses: 'fa fa-bars'
+            iconClasses: 'fa fa-angle-left'
+        });
+
+        buttonData.push({
+            id: 'annotate',
+            title: 'Annotate',
+            classes: 'imageViewerTool',
+            svgLink: '/assets/dicom/packages/viewerbase/assets/icons.svg#icon-tools-measure-non-target'
+        });
+
+        buttonData.push({
+            id: 'toggleCineDialog',
+            title: 'CINE',
+            classes: 'imageViewerCommand',
+            iconClasses: 'fa fa-youtube-play'
         });
 
         buttonData.push({
@@ -108,34 +123,27 @@ Template.toolbarSection.helpers({
             classes: 'imageViewerTool toolbarSectionButton',
             iconClasses: 'fa fa-circle'
         });
-        
-        buttonData.push({
-            id: 'wwwcRegion',
-            title: 'ROI Window',
-            classes: 'imageViewerTool',
-            iconClasses: 'fa fa-square'
-        });
 
-        buttonData.push({
-            id: 'dragProbe',
-            title: 'Probe',
-            classes: 'imageViewerTool',
-            iconClasses: 'fa fa-dot-circle-o'
-        });
+        // buttonData.push({
+        //     id: 'wwwcRegion',
+        //     title: 'ROI Window',
+        //     classes: 'imageViewerTool',
+        //     iconClasses: 'fa fa-square'
+        // });
 
-        buttonData.push({
-            id: 'ellipticalRoi',
-            title: 'Ellipse',
-            classes: 'imageViewerTool',
-            iconClasses: 'fa fa-circle-o'
-        });
+        // buttonData.push({
+        //     id: 'dragProbe',
+        //     title: 'Probe',
+        //     classes: 'imageViewerTool',
+        //     iconClasses: 'fa fa-dot-circle-o'
+        // });
 
-        buttonData.push({
-            id: 'rectangleRoi',
-            title: 'Rectangle',
-            classes: 'imageViewerTool',
-            iconClasses: 'fa fa-square-o'
-        });
+        // buttonData.push({
+        //     id: 'rectangleRoi',
+        //     title: 'Rectangle',
+        //     classes: 'imageViewerTool',
+        //     iconClasses: 'fa fa-square-o'
+        // });
 
         buttonData.push({
             id: 'invert',
@@ -151,7 +159,7 @@ Template.toolbarSection.helpers({
             iconClasses: 'fa fa-trash'
         });
 
-        return buttonData;   
+        return buttonData;
     },
 
     hangingProtocolButtons() {
@@ -178,6 +186,41 @@ Template.toolbarSection.helpers({
 
 Template.toolbarSection.onRendered(function() {
     const instance = Template.instance();
+
+    // Enable fullscreen mode on button press
+        $('.fa-external-link').on('click', function(){
+          console.log("clicked fullscreen");
+          // if already full screen; exit
+          // else go fullscreen
+          if (
+            document.fullscreenElement ||
+            document.webkitFullscreenElement ||
+            document.mozFullScreenElement ||
+            document.msFullscreenElement
+          ) {
+            if (document.exitFullscreen) {
+              document.exitFullscreen();
+            } else if (document.mozCancelFullScreen) {
+              document.mozCancelFullScreen();
+            } else if (document.webkitExitFullscreen) {
+              document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) {
+              document.msExitFullscreen();
+            }
+          } else {
+            element = $('#viewer').get(0);
+            if (element.requestFullscreen) {
+              element.requestFullscreen();
+            } else if (element.mozRequestFullScreen) {
+              element.mozRequestFullScreen();
+            } else if (element.webkitRequestFullscreen) {
+              element.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+            } else if (element.msRequestFullscreen) {
+              element.msRequestFullscreen();
+            }
+          }
+        });
+    // End fullscreen JS
 
     instance.$('#layout').dropdown();
 
