@@ -21,7 +21,7 @@
   .svgContainer
     margin: 0 auto
     text-align: center
-    
+
     i
       font-size: 18px
       line-height: 30px
@@ -39,7 +39,7 @@
     svg
       theme('fill', '$hoverColor')
       theme('stroke', '$hoverColor')
-      
+
     i
       theme('color', '$hoverColor')
 
@@ -50,6 +50,17 @@
     svg
       theme('fill', '$activeColor')
       theme('stroke', '$activeColor')
-      
+
     i
       theme('color', '$activeColor')
+
+#layout:hover, #fullscreen:hover
+  .buttonLabel
+    theme('color', '$defaultColor')
+
+  svg
+    theme('fill', '$defaultColor')
+    theme('stroke', '$defaultColor')
+
+  i
+    theme('color', '$defaultColor')

@@ -11,7 +11,7 @@ LayoutManager = class LayoutManager {
         this.layoutTemplateName = 'gridLayout';
         this.layoutProps = {
             rows: 1,
-            columns: 1
+            columns: 2
         };
 
         this.viewportData = [];
