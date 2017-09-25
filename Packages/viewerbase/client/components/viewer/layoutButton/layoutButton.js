@@ -20,8 +20,5 @@ Template.layoutButton.events({
 
         // Open or close the layout chooser dialog
         toggleDialog($dropdown);
-        if ($button.attr('aria-expanded')) {
-
-        }
     }
 });
