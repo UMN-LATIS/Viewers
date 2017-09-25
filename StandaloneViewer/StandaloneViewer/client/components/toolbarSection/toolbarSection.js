@@ -187,42 +187,116 @@ Template.toolbarSection.helpers({
 Template.toolbarSection.onRendered(function() {
     const instance = Template.instance();
 
+    function makeFullscreen() {
+      console.log("tapped fullscreen");
+      // if already full screen; exit
+      // else go fullscreen
+      if (
+        document.fullscreenElement ||
+        document.webkitFullscreenElement ||
+        document.mozFullScreenElement ||
+        document.msFullscreenElement
+      ) {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+          document.mozCancelFullScreen();
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+          document.msExitFullscreen();
+        }
+      } else {
+        element = $('#viewer').get(0);
+        if (element.requestFullscreen) {
+          element.requestFullscreen();
+        } else if (element.mozRequestFullScreen) {
+          element.mozRequestFullScreen();
+        } else if (element.webkitRequestFullscreen) {
+          element.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+        } else if (element.msRequestFullscreen) {
+          element.msRequestFullscreen();
+        }
+      }
+    };
+
+    $('.fa-external-link').hammer().bind("tap press", makeFullscreen);
+
     // Enable fullscreen mode on button press
-        $('.fa-external-link').on('click', function(){
-          console.log("clicked fullscreen");
-          // if already full screen; exit
-          // else go fullscreen
-          if (
-            document.fullscreenElement ||
-            document.webkitFullscreenElement ||
-            document.mozFullScreenElement ||
-            document.msFullscreenElement
-          ) {
-            if (document.exitFullscreen) {
-              document.exitFullscreen();
-            } else if (document.mozCancelFullScreen) {
-              document.mozCancelFullScreen();
-            } else if (document.webkitExitFullscreen) {
-              document.webkitExitFullscreen();
-            } else if (document.msExitFullscreen) {
-              document.msExitFullscreen();
-            }
-          } else {
-            element = $('#viewer').get(0);
-            if (element.requestFullscreen) {
-              element.requestFullscreen();
-            } else if (element.mozRequestFullScreen) {
-              element.mozRequestFullScreen();
-            } else if (element.webkitRequestFullscreen) {
-              element.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-            } else if (element.msRequestFullscreen) {
-              element.msRequestFullscreen();
-            }
-          }
-        });
+        // $('.fa-external-link').on('click', function(){
+        //   console.log("clicked fullscreen");
+        //   // if already full screen; exit
+        //   // else go fullscreen
+        //   if (
+        //     document.fullscreenElement ||
+        //     document.webkitFullscreenElement ||
+        //     document.mozFullScreenElement ||
+        //     document.msFullscreenElement
+        //   ) {
+        //     if (document.exitFullscreen) {
+        //       document.exitFullscreen();
+        //     } else if (document.mozCancelFullScreen) {
+        //       document.mozCancelFullScreen();
+        //     } else if (document.webkitExitFullscreen) {
+        //       document.webkitExitFullscreen();
+        //     } else if (document.msExitFullscreen) {
+        //       document.msExitFullscreen();
+        //     }
+        //   } else {
+        //     element = $('#viewer').get(0);
+        //     if (element.requestFullscreen) {
+        //       element.requestFullscreen();
+        //     } else if (element.mozRequestFullScreen) {
+        //       element.mozRequestFullScreen();
+        //     } else if (element.webkitRequestFullscreen) {
+        //       element.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+        //     } else if (element.msRequestFullscreen) {
+        //       element.msRequestFullscreen();
+        //     }
+        //   }
+        // });
     // End fullscreen JS
 
     instance.$('#layout').dropdown();
+    // PreventGhostClick($('#layout'));
+
+    // $('#layout').hammer().bind("touchstart touchend", doNothing);
+    // function doNothing() {
+    //   console.log("eating the touchstart/touchend");
+    //   e.stopPropagation();
+    //   e.preventDefault();
+    //   return false;
+    // }
+
+// Enable the layout button for touch devices
+    $('#layout').hammer().bind("tap press", layoutTapHandler);
+    function layoutTapHandler(event) {
+      console.log("ghost clicks prevented, but i'm still here");
+      console.log(event.type);
+      // if (event.type == 'tap' || event.type == 'press' ) {
+      //   e.stopPropagation();
+      //   e.preventDefault();
+      //   return false;
+      // }
+      const $button = $(event.currentTarget);
+      const $dropdown = $($button.data('target'));
+      // $('.js-dropdown-toggle').click();
+      // Adjust the dropdown's CSS to properly place it on the page
+      $dropdown.css({
+          top: $button.offset().top + $button.outerHeight() + 'px',
+          left: $button.offset().left + 'px'
+      });
+
+      // Open or close the layout chooser dialog
+      toggleDialog($dropdown);
+
+      // $('#layout').click( function() {
+      //     $(this).mouseleave();
+      // });
+
+    };
+
+
 
     // Set disabled/enabled tool buttons that are set in toolManager
     const states = toolManager.getToolDefaultStates();
@@ -239,4 +313,11 @@ Template.toolbarSection.onRendered(function() {
             }
         }
     }
+
+
+
+
+
+
+
 });

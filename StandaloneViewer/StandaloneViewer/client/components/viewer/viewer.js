@@ -10,6 +10,7 @@ OHIF.viewer.cine = {
     loop: true
 };
 
+
 OHIF.viewer.functionList = {
     toggleCineDialog: toggleCineDialog,
     toggleCinePlay: toggleCinePlay,
@@ -43,7 +44,7 @@ Template.viewer.onCreated(() => {
         ViewerData[contentId].loadedSeriesData = OHIF.viewer.loadedSeriesData;
 
         // Update the viewer data object
-        ViewerData[contentId].viewportColumns = 1;
+        ViewerData[contentId].viewportColumns = 2;
         ViewerData[contentId].viewportRows = 1;
         ViewerData[contentId].activeViewport = 0;
     }
