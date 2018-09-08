@@ -43,8 +43,14 @@ Template.viewer.onCreated(() => {
         ViewerData[contentId] = {};
         ViewerData[contentId].loadedSeriesData = OHIF.viewer.loadedSeriesData;
 
+
+
         // Update the viewer data object
-        ViewerData[contentId].viewportColumns = 2;
+
+        // Pop the left sidebar when there are > 2 series
+        if (instance.data.studies[0].seriesList.length > 2) {
+          instance.data.state.set('leftSidebar', true);
+        }
         ViewerData[contentId].viewportRows = 1;
         ViewerData[contentId].activeViewport = 0;
     }
@@ -71,4 +77,20 @@ Template.viewer.events({
         const current = instance.data.state.get('leftSidebar');
         instance.data.state.set('leftSidebar', !current);
     }
+});
+
+
+// Force a single column for a study with only one series
+Template.viewer.onRendered( function() {
+
+  if (!Template.instance()) { return; }
+
+  const instance = Template.instance();
+
+
+  if (instance.data.studies[0].seriesList.length === 1) {
+    window.layoutManager.layoutProps.columns = 1;
+    window.layoutManager.updateViewports();
+  }
+
 });
